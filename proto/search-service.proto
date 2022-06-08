@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+// import
+import "search.proto";
+import "search-vacancy.proto";
+import "search-resume.proto";
+
+package search;
+
+option go_package = "./pkg/search/pb";
+
+
+// swagger:model AvailableProvider
+message AvailableProvider {
+  // required: true
+  string label = 1;
+  // required: true
+  string value = 2;
+  // required: true
+  string provider_type = 3;
+}
+
+enum UserType {
+  guest = 0;
+  admin = 1;
+  merchant = 2;
+  customer = 3;
+  otp = 4;
+}
+
+enum OperationCode {
+  checkBalance = 0;
+  payIn = 1;
+  payOut = 2;
+  holdAdd = 3;
+  holdRemove = 4;
+}
+
+
+message Pagination {
+  int64 limit = 1;
+  int64 skip = 2;
+  int64 total_items = 3;
+}
+
+message CommentedResponse {
+  bool result = 1;
+  string comment = 2;
+}
+
+
+// models
+
+service SearchService {
+  // services
+  rpc VacancySearch(VacancySearchEntity)returns(VacancySearchResponse);
+  rpc VacancyIndexUpdate(VacancyEntity) returns (CommentedResponse);
+  rpc VacancyIndexCreate(VacancyEntity) returns (CommentedResponse);
+
+
+  rpc ResumeSearch(ResumeSearchEntity) returns (ResumeSearchResponse);
+  rpc ResumeIndexUpdate(ResumeEntity) returns (CommentedResponse);
+  rpc ResumeIndexCreate(ResumeEntity) returns (CommentedResponse);
+}

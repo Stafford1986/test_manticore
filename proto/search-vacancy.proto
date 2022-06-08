@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package search;
+
+option go_package = "./pkg/search/pb";
+
+// swagger:model vacancyEntity
+message VacancyEntity {
+  uint32 id = 1; // @gotags: db:"id"
+  string name = 2; // @gotags: db:"name,index"
+  bool active = 3;  // @gotags: db:"active"
+  uint64 created_at = 4; // @gotags: db:"created_at"
+  uint64 updated_at = 5; // @gotags: db:"updated_at"
+  string requirement = 7; // @gotags: db:"requirement,index"
+  uint32 salary = 8; // @gotags: db:"salary"
+  string skills = 9; // @gotags: db:"skills,index"
+  uint32 city = 10; // @gotags: db:"city,filter"
+  uint32 city_level = 11; // @gotags: db:"city_level"
+  string brand = 12; // @gotags: db:"brand,index"
+  string website_url = 13;// @gotags: db:"website_url"
+  string logo = 14; // @gotags: db:"logo"
+  repeated uint32 industry_groups = 15; // @gotags: db:"industry_groups,filter"
+  uint32 company_id = 16; // @gotags: db:"company_id"
+  repeated uint32 specialization = 17; // @gotags: db:"specialization,filter"
+  repeated uint32 metro = 18; // @gotags: db:"metro,filter"
+  bool salary_before_tax = 20; // @gotags: db:"salary_before_tax"
+  uint32 salary_curr = 21; // @gotags: db:"salary_curr"
+  string job_responsibility = 22; // @gotags: db:"job_responsibility,index"
+  string job_requirement = 23; // @gotags: db:"job_requirement,index"
+  string work_condition = 24; // @gotags: db:"work_condition,index"
+  repeated uint32 city_visibility = 28; // @gotags: db:"city_visibility,filter"
+  uint32 vacancy_language = 29; // @gotags: db:"vacancy_language,filter"
+  uint32 business_trips = 30; // @gotags: db:"business_tripp,filter"
+  bool self_employed = 31; // @gotags: db:"self_employed,filter"
+  bool ip_employed = 32; // @gotags: db:"ip_employed,filter"
+  uint32 payment_period = 33; // @gotags: db:"payment_period,filter"
+  uint32 salary_from = 34; // @gotags: db:"salary_from,filter"
+  uint32 salary_to = 35; // @gotags: db:"salary_to,filter"
+  uint32 default_work_type = 36; // @gotags: db:"default_work_type,filter"
+  repeated uint32 work_type = 37; // @gotags: db:"work_type"
+  uint32 experience = 38; // @gotags: db:"experience,filter"
+  repeated uint32 min_customer_languages = 39; // @gotags: db:"min_customer_languages,filter"
+  repeated uint32 driver_license = 40; // @gotags: db:"driver_license,filter"
+  uint32 driver_exp = 41; // @gotags: db:"driver_exp,filter"
+  bool have_car = 42; // @gotags: db:"have_car,filter"
+  repeated uint32 restrictions = 46; // @gotags: db:"restrictions,filter"
+  bool list_respond_button = 47; // @gotags: db:"list_respond_button"
+}

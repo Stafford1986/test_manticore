@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+import "search-vacancy.proto";
+import "search-resume.proto";
+
+package search;
+
+option go_package = "./pkg/search/pb";
+
+// swagger:parameters vacancySearchRequest
+message VacancySearchEntity {
+  // in: query
+  string query = 1;
+  repeated FilterParams filter_params = 2;
+  repeated SortParams sort_params = 3;
+}
+// swagger:model vacancySearchResponse
+message VacancySearchResponse {
+  // in: body
+  // required: true
+  repeated VacancyEntity items = 1;
+}
+
+
+// swagger:parameters resumeSearchRequest
+message ResumeSearchEntity {
+  // in: query
+  string query = 1;
+  repeated FilterParams filter_params = 2;
+  repeated SortParams sort_params = 3;
+}
+// swagger:model resumeSearchResponse
+message ResumeSearchResponse {
+  // in: body
+  // required: true
+  repeated ResumeEntity items = 1;
+}
+
+
+// swagger:model sortParams
+message SortParams {
+  string field = 1;
+  oneof order {
+    string ASC = 2;
+    string DESC = 3;
+  }
+}
+
+message IntArray {
+  repeated uint32 values = 1;
+}
+
+// swagger:model filterParams
+message FilterParams {
+  string filter = 1;
+  oneof value {
+    string single_string = 2;
+    uint32 single_int = 3;
+    IntArray int_array = 4;
+  };
+}

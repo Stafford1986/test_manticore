@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"github.com/Stafford1986/test_manticore/usecase/entity"
+	"github.com/Stafford1986/test_manticore/pb"
 	"log"
 )
 
@@ -12,9 +12,9 @@ type ResumeUseCase struct {
 }
 
 type ResumeRepo interface {
-	Insert(ctx context.Context, req *entity.ResumeEntity) error
-	Upsert(ctx context.Context, req *entity.ResumeEntity) error
-	Find(ctx context.Context, sr *entity.SearchRequest) ([]*entity.ResumeEntity, error)
+	Insert(ctx context.Context, req *pb.ResumeEntity) error
+	Upsert(ctx context.Context, req *pb.ResumeEntity) error
+	Find(ctx context.Context, sr *pb.ResumeSearchEntity) (*pb.ResumeSearchResponse, error)
 	GetSuggestions(ctx context.Context, req string) ([]string, error)
 }
 
@@ -26,17 +26,10 @@ func NewResumeUseCase(repo ResumeRepo) *ResumeUseCase {
 	}
 }
 
-func (uc *ResumeUseCase) Save(ctx context.Context, req *entity.ResumeEntity) error {
-	err := req.Validate()
+func (uc *ResumeUseCase) Save(ctx context.Context, req *pb.ResumeEntity) error {
+	err := uc.resumeRepo.Insert(ctx, req)
 	if err != nil {
-		uc.logger.Printf("err validation on save resume: %v", err)
-
-		return err
-	}
-
-	err = uc.resumeRepo.Insert(ctx, req)
-	if err != nil {
-		uc.logger.Printf("failed to save resume into manticore: %v", err)
+		uc.logger.Printf("failed to save resume into manticore_native: %v", err)
 
 		return err
 	}
@@ -44,17 +37,10 @@ func (uc *ResumeUseCase) Save(ctx context.Context, req *entity.ResumeEntity) err
 	return nil
 }
 
-func (uc *ResumeUseCase) Update(ctx context.Context, req *entity.ResumeEntity) error {
-	err := req.Validate()
+func (uc *ResumeUseCase) Update(ctx context.Context, req *pb.ResumeEntity) error {
+	err := uc.resumeRepo.Upsert(ctx, req)
 	if err != nil {
-		uc.logger.Printf("err validation on update resume: %v", err)
-
-		return err
-	}
-
-	err = uc.resumeRepo.Upsert(ctx, req)
-	if err != nil {
-		uc.logger.Printf("failed to upsert resume into manticore: %v", err)
+		uc.logger.Printf("failed to upsert resume into manticore_native: %v", err)
 
 		return err
 	}
@@ -62,7 +48,7 @@ func (uc *ResumeUseCase) Update(ctx context.Context, req *entity.ResumeEntity) e
 	return nil
 }
 
-func (uc *ResumeUseCase) Search(ctx context.Context, req *entity.SearchRequest) (entity.Resumes, error) {
+func (uc *ResumeUseCase) Search(ctx context.Context, req *pb.ResumeSearchEntity) (*pb.ResumeSearchResponse, error) {
 	res, err := uc.resumeRepo.Find(ctx, req)
 	if err != nil {
 		uc.logger.Printf("failed find resume: %v", err)

@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"github.com/Stafford1986/test_manticore/usecase/entity"
+	"github.com/Stafford1986/test_manticore/pb"
 	"log"
 )
 
@@ -12,9 +12,9 @@ type VacancyUseCase struct {
 }
 
 type VacancyRepo interface {
-	Insert(ctx context.Context, req *entity.VacancyEntity) error
-	Upsert(ctx context.Context, req *entity.VacancyEntity) error
-	Find(ctx context.Context, sr *entity.SearchRequest) ([]*entity.VacancyEntity, error)
+	Insert(ctx context.Context, req *pb.VacancyEntity) error
+	Upsert(ctx context.Context, req *pb.VacancyEntity) error
+	Find(ctx context.Context, sr *pb.VacancySearchEntity) (*pb.VacancySearchResponse, error)
 	GetSuggestions(ctx context.Context, req string) ([]string, error)
 }
 
@@ -26,17 +26,10 @@ func NewVacancyUseCase(repo VacancyRepo) *VacancyUseCase {
 	}
 }
 
-func (uc *VacancyUseCase) Save(ctx context.Context, req *entity.VacancyEntity) error {
-	err := req.Validate()
+func (uc *VacancyUseCase) Save(ctx context.Context, req *pb.VacancyEntity) error {
+	err := uc.vacancyRepo.Insert(ctx, req)
 	if err != nil {
-		uc.logger.Printf("err validation on save vacancy: %v", err)
-
-		return err
-	}
-
-	err = uc.vacancyRepo.Insert(ctx, req)
-	if err != nil {
-		uc.logger.Printf("failed to save vacancy into manticore: %v", err)
+		uc.logger.Printf("failed to save vacancy into manticore_native: %v", err)
 
 		return err
 	}
@@ -44,17 +37,10 @@ func (uc *VacancyUseCase) Save(ctx context.Context, req *entity.VacancyEntity) e
 	return nil
 }
 
-func (uc *VacancyUseCase) Update(ctx context.Context, req *entity.VacancyEntity) error {
-	err := req.Validate()
+func (uc *VacancyUseCase) Update(ctx context.Context, req *pb.VacancyEntity) error {
+	err := uc.vacancyRepo.Upsert(ctx, req)
 	if err != nil {
-		uc.logger.Printf("err validation on update vacancy: %v", err)
-
-		return err
-	}
-
-	err = uc.vacancyRepo.Upsert(ctx, req)
-	if err != nil {
-		uc.logger.Printf("failed to upsert vacancy into manticore: %v", err)
+		uc.logger.Printf("failed to upsert vacancy into manticore_native: %v", err)
 
 		return err
 	}
@@ -62,7 +48,7 @@ func (uc *VacancyUseCase) Update(ctx context.Context, req *entity.VacancyEntity)
 	return nil
 }
 
-func (uc *VacancyUseCase) Search(ctx context.Context, req *entity.SearchRequest) (entity.Vacancies, error) {
+func (uc *VacancyUseCase) Search(ctx context.Context, req *pb.VacancySearchEntity) (*pb.VacancySearchResponse, error) {
 	res, err := uc.vacancyRepo.Find(ctx, req)
 	if err != nil {
 		uc.logger.Printf("failed find resume: %v", err)

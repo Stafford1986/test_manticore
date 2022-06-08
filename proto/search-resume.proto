@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package search;
+
+option go_package = "./pkg/search/pb";
+
+// swagger:model resumeEntity
+message ResumeEntity {
+  uint32 id = 1; // @gotags: db:"id"
+  string name = 2; // @gotags: db:"name,index"
+  bool active = 3; // @gotags: db:"active"
+  int64 created_at = 4; // @gotags: db:"created_at"
+  int64 updated_at = 5; // @gotags: db:"updated_at"
+  string job_name = 6; // @gotags: db:"job_name,index"
+  string job_desc_duties = 7; // @gotags: db:"job_desc_duties,index"
+  string job_desc_achievements = 8; // @gotags: db:"job_desc_achievements,index"
+  string company_name = 9; // @gotags: db:"company_name,index"
+  string institute_name = 10; // @gotags: db:"institute_name,index"
+  string certificate_name = 11; // @gotags: db:"certificate_name,index"
+  uint32 customer_id = 12; // @gotags: db:"customer_id"
+  repeated uint32 languages = 13; // @gotags: db:"languages,filter"
+  string salary_curr = 14; // @gotags: db:"salary_curr,filter"
+  uint32 payment_period = 15; // @gotags: db:"payment_period,filter"
+  repeated uint32 industries = 16; // @gotags: db:"industries,filter"
+  uint32 business_trip = 17; // @gotags: db:"business_trip,filter"
+  uint32 default_work_type = 18; // @gotags: db:"default_work_type,filter"
+  uint32 regular_trip = 19; // @gotags: db:"regular_trip,filter"
+  repeated uint32 work_license = 20; // @gotags: db:"work_license,filter"
+  uint32 resume_language = 21; // @gotags: db:"resume_language,filter"
+  repeated uint32 metro = 22; // @gotags: db:"metro,filter"
+  repeated uint32 work_type = 23; // @gotags: db:"work_type"
+  repeated uint32 additional_calc_form = 24; // @gotags: db:"additional_calc_form,filter"
+  string about_short = 25; // @gotags: db:"about_short,index"
+  uint32 salary = 26; // @gotags: db:"salary,filter"
+  string skills = 27; // @gotags: db:"skills,index"
+  uint32 city = 28; // @gotags: db:"city,filter"
+  uint32 specialization = 29; // @gotags: db:"specialization,filter"
+  uint32 status = 30; // @gotags: db:"status"
+}
