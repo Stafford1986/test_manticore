@@ -9,6 +9,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"strconv"
 	"strings"
 )
 
@@ -63,8 +64,8 @@ func (repo *ResumeRepository) Upsert(ctx context.Context, req *pb.ResumeEntity) 
 	return nil
 }
 
-func (repo *ResumeRepository) Find(ctx context.Context, sr *pb.ResumeSearchEntity) (*pb.ResumeSearchResponse, error) {
-	fr, err := sr.BuildSearchQuery()
+func (repo *ResumeRepository) Find(ctx context.Context, sr *pb.ResumeSearchEntity) ([]uint32, error) {
+	fr, err := sr.BuildSearchQuery(1000)
 	fmt.Println(fr)
 	if err != nil {
 		return nil, err
@@ -80,11 +81,10 @@ func (repo *ResumeRepository) Find(ctx context.Context, sr *pb.ResumeSearchEntit
 		return nil, err
 	}
 
-	var result []*pb.ResumeEntity
+	var result []uint32
 
 	for {
 		if rows.Next() {
-			rm := &pb.ResumeEntity{}
 			fieldMap := make(map[string]interface{}, len(col))
 
 			err = sqlx.MapScan(rows, fieldMap)
@@ -92,12 +92,17 @@ func (repo *ResumeRepository) Find(ctx context.Context, sr *pb.ResumeSearchEntit
 				return nil, err
 			}
 
-			r, err := rm.ParseDbResult(fieldMap)
+			val := fieldMap["id"]
+			v, ok := val.([]byte)
+			if !ok {
+				return nil, errors.New("err convert id")
+			}
+			p, err := strconv.ParseUint(string(v), 10, 32)
 			if err != nil {
-				return nil, err
+				return nil, errors.New("err convert value to Id")
 			}
 
-			result = append(result, r)
+			result = append(result, uint32(p))
 
 			continue
 		}
@@ -105,9 +110,7 @@ func (repo *ResumeRepository) Find(ctx context.Context, sr *pb.ResumeSearchEntit
 		break
 	}
 
-	return &pb.ResumeSearchResponse{
-		Items: result,
-	}, nil
+	return result, nil
 }
 
 func (repo *ResumeRepository) GetSuggestions(ctx context.Context, req string) ([]string, error) {
@@ -146,4 +149,3 @@ func (repo *ResumeRepository) GetSuggestions(ctx context.Context, req string) ([
 func createOptimizeQuery(index string) string {
 	return fmt.Sprintf("OPTIMIZE INDEX %s;", index)
 }
-

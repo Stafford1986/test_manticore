@@ -11,9 +11,9 @@ import (
 func (re *VacancyEntity) BuildInsertQuery() (string, error) {
 	var (
 		resErr    error
-		resValues = make([]string, 0, 39)
+		resValues = make([]string, 0, 37)
 	)
-	sb := bytes.NewBufferString("INSERT INTO vacancies(id, name, active, created_at, updated_at, requirement, salary, skills, city, city_level, brand, website_url, logo, industry_groups, company_id, specialization, metro, salary_before_tax, salary_curr, job_responsibility, job_requirement, work_condition, city_visibility, vacancy_language, business_tripp, self_employed, ip_employed, payment_period, salary_from, salary_to, default_work_type, work_type, experience, min_customer_languages, driver_license, driver_exp, have_car, restrictions, list_respond_button) VALUES(")
+	sb := bytes.NewBufferString("INSERT INTO vacancies(id, name, active, created_at, updated_at, skills, city, city_level, brand, website_url, logo, industry_groups, company_id, specialization, metro, salary_before_tax, salary_curr, job_responsibility, job_requirement, work_condition, city_visibility, vacancy_language, business_trips, self_employed, ip_employed, payment_period, salary_from, salary_to, default_work_type, work_type, experience, min_customer_languages, driver_license, driver_exp, have_car, restrictions, list_respond_button) VALUES(")
 	resValues = append(resValues, strconv.FormatInt(int64(re.Id), 10))
 	resValues = append(resValues, func() string {
 		sb := bytes.NewBufferString("'")
@@ -37,23 +37,8 @@ func (re *VacancyEntity) BuildInsertQuery() (string, error) {
 		}
 		return "0"
 	}())
-	resValues = append(resValues, func() string {
-		sb := bytes.NewBufferString("'")
-		if len(re.Requirement) == 0 {
-			_, err := sb.WriteString(" '")
-			if err != nil {
-				resErr = gomultierror.Append(resErr, err)
-			}
-			return sb.String()
-		}
-		_, err := sb.WriteString(re.Requirement)
-		_, err = sb.WriteString("'")
-		if err != nil {
-			resErr = gomultierror.Append(resErr, err)
-		}
-		return sb.String()
-	}())
-	resValues = append(resValues, strconv.FormatInt(int64(re.Salary), 10))
+	resValues = append(resValues, strconv.FormatInt(int64(re.CreatedAt), 10))
+	resValues = append(resValues, strconv.FormatInt(int64(re.UpdatedAt), 10))
 	resValues = append(resValues, func() string {
 		sb := bytes.NewBufferString("'")
 		if len(re.Skills) == 0 {
@@ -429,9 +414,9 @@ func (re *VacancyEntity) BuildInsertQuery() (string, error) {
 func (re *VacancyEntity) BuildUpsertQuery() (string, error) {
 	var (
 		resErr    error
-		resValues = make([]string, 0, 39)
+		resValues = make([]string, 0, 37)
 	)
-	sb := bytes.NewBufferString("REPLACE INTO vacancies(id, name, active, created_at, updated_at, requirement, salary, skills, city, city_level, brand, website_url, logo, industry_groups, company_id, specialization, metro, salary_before_tax, salary_curr, job_responsibility, job_requirement, work_condition, city_visibility, vacancy_language, business_tripp, self_employed, ip_employed, payment_period, salary_from, salary_to, default_work_type, work_type, experience, min_customer_languages, driver_license, driver_exp, have_car, restrictions, list_respond_button) VALUES(")
+	sb := bytes.NewBufferString("REPLACE INTO vacancies(id, name, active, created_at, updated_at, skills, city, city_level, brand, website_url, logo, industry_groups, company_id, specialization, metro, salary_before_tax, salary_curr, job_responsibility, job_requirement, work_condition, city_visibility, vacancy_language, business_trips, self_employed, ip_employed, payment_period, salary_from, salary_to, default_work_type, work_type, experience, min_customer_languages, driver_license, driver_exp, have_car, restrictions, list_respond_button) VALUES(")
 	resValues = append(resValues, strconv.FormatInt(int64(re.Id), 10))
 	resValues = append(resValues, func() string {
 		sb := bytes.NewBufferString("'")
@@ -455,23 +440,8 @@ func (re *VacancyEntity) BuildUpsertQuery() (string, error) {
 		}
 		return "0"
 	}())
-	resValues = append(resValues, func() string {
-		sb := bytes.NewBufferString("'")
-		if len(re.Requirement) == 0 {
-			_, err := sb.WriteString(" '")
-			if err != nil {
-				resErr = gomultierror.Append(resErr, err)
-			}
-			return sb.String()
-		}
-		_, err := sb.WriteString(re.Requirement)
-		_, err = sb.WriteString("'")
-		if err != nil {
-			resErr = gomultierror.Append(resErr, err)
-		}
-		return sb.String()
-	}())
-	resValues = append(resValues, strconv.FormatInt(int64(re.Salary), 10))
+	resValues = append(resValues, strconv.FormatInt(int64(re.CreatedAt), 10))
+	resValues = append(resValues, strconv.FormatInt(int64(re.UpdatedAt), 10))
 	resValues = append(resValues, func() string {
 		sb := bytes.NewBufferString("'")
 		if len(re.Skills) == 0 {

@@ -13,8 +13,9 @@ type VacancyUseCase struct {
 
 type VacancyRepo interface {
 	Insert(ctx context.Context, req *pb.VacancyEntity) error
+	BulkInsert(ctx context.Context, req *pb.VacancyList) error
 	Upsert(ctx context.Context, req *pb.VacancyEntity) error
-	Find(ctx context.Context, sr *pb.VacancySearchEntity) (*pb.VacancySearchResponse, error)
+	Find(ctx context.Context, sr *pb.VacancySearchEntity) ([]uint32, error)
 	GetSuggestions(ctx context.Context, req string) ([]string, error)
 }
 
@@ -36,6 +37,16 @@ func (uc *VacancyUseCase) Save(ctx context.Context, req *pb.VacancyEntity) error
 
 	return nil
 }
+func (uc *VacancyUseCase) SaveBulk(ctx context.Context, req *pb.VacancyList) error {
+	err := uc.vacancyRepo.BulkInsert(ctx, req)
+	if err != nil {
+		uc.logger.Printf("failed to save vacancy list into manticore_native: %v", err)
+
+		return err
+	}
+
+	return nil
+}
 
 func (uc *VacancyUseCase) Update(ctx context.Context, req *pb.VacancyEntity) error {
 	err := uc.vacancyRepo.Upsert(ctx, req)
@@ -48,7 +59,7 @@ func (uc *VacancyUseCase) Update(ctx context.Context, req *pb.VacancyEntity) err
 	return nil
 }
 
-func (uc *VacancyUseCase) Search(ctx context.Context, req *pb.VacancySearchEntity) (*pb.VacancySearchResponse, error) {
+func (uc *VacancyUseCase) Search(ctx context.Context, req *pb.VacancySearchEntity) ([]uint32, error) {
 	res, err := uc.vacancyRepo.Find(ctx, req)
 	if err != nil {
 		uc.logger.Printf("failed find resume: %v", err)

@@ -49,7 +49,7 @@ func (re *VacancyEntity) ParseDbResult(m map[string]interface{}) (*VacancyEntity
 			if !ok {
 				return nil, errors.New("err convert created_at")
 			}
-			p, err := strconv.ParseUint(string(val), 10, 64)
+			p, err := strconv.ParseInt(string(val), 10, 64)
 			if err != nil {
 				return nil, errors.New("err convert value to CreatedAt")
 			}
@@ -59,27 +59,11 @@ func (re *VacancyEntity) ParseDbResult(m map[string]interface{}) (*VacancyEntity
 			if !ok {
 				return nil, errors.New("err convert updated_at")
 			}
-			p, err := strconv.ParseUint(string(val), 10, 64)
+			p, err := strconv.ParseInt(string(val), 10, 64)
 			if err != nil {
 				return nil, errors.New("err convert value to UpdatedAt")
 			}
 			res.UpdatedAt = p
-		case "requirement":
-			val, ok := v.([]byte)
-			if !ok {
-				return nil, errors.New("err convert requirement")
-			}
-			res.Requirement = string(val)
-		case "salary":
-			val, ok := v.([]byte)
-			if !ok {
-				return nil, errors.New("err convert salary")
-			}
-			p, err := strconv.ParseUint(string(val), 10, 32)
-			if err != nil {
-				return nil, errors.New("err convert value to Salary")
-			}
-			res.Salary = uint32(p)
 		case "skills":
 			val, ok := v.([]byte)
 			if !ok {
@@ -254,10 +238,10 @@ func (re *VacancyEntity) ParseDbResult(m map[string]interface{}) (*VacancyEntity
 				return nil, errors.New("err convert value to VacancyLanguage")
 			}
 			res.VacancyLanguage = uint32(p)
-		case "business_tripp":
+		case "business_trips":
 			val, ok := v.([]byte)
 			if !ok {
-				return nil, errors.New("err convert business_tripp")
+				return nil, errors.New("err convert business_trips")
 			}
 			p, err := strconv.ParseUint(string(val), 10, 32)
 			if err != nil {

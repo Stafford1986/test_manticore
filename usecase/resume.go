@@ -14,7 +14,7 @@ type ResumeUseCase struct {
 type ResumeRepo interface {
 	Insert(ctx context.Context, req *pb.ResumeEntity) error
 	Upsert(ctx context.Context, req *pb.ResumeEntity) error
-	Find(ctx context.Context, sr *pb.ResumeSearchEntity) (*pb.ResumeSearchResponse, error)
+	Find(ctx context.Context, sr *pb.ResumeSearchEntity) ([]uint32, error)
 	GetSuggestions(ctx context.Context, req string) ([]string, error)
 }
 
@@ -48,7 +48,7 @@ func (uc *ResumeUseCase) Update(ctx context.Context, req *pb.ResumeEntity) error
 	return nil
 }
 
-func (uc *ResumeUseCase) Search(ctx context.Context, req *pb.ResumeSearchEntity) (*pb.ResumeSearchResponse, error) {
+func (uc *ResumeUseCase) Search(ctx context.Context, req *pb.ResumeSearchEntity) ([]uint32, error) {
 	res, err := uc.resumeRepo.Find(ctx, req)
 	if err != nil {
 		uc.logger.Printf("failed find resume: %v", err)

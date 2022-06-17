@@ -16,35 +16,35 @@ var (
 
 func init() {
 	targetResumeFieldMap["id"] = ""
-	targetResumeFieldMap["job_name"] = "index"
-	targetResumeFieldMap["certificate_name"] = "index"
-	targetResumeFieldMap["work_license"] = "filter"
-	targetResumeFieldMap["payment_period"] = "filter"
-	targetResumeFieldMap["institute_name"] = "index"
-	targetResumeFieldMap["metro"] = "filter"
-	targetResumeFieldMap["additional_calc_form"] = "filter"
-	targetResumeFieldMap["specialization"] = "filter"
-	targetResumeFieldMap["company_name"] = "index"
-	targetResumeFieldMap["regular_trip"] = "filter"
-	targetResumeFieldMap["work_type"] = ""
-	targetResumeFieldMap["about_short"] = "index"
 	targetResumeFieldMap["active"] = ""
-	targetResumeFieldMap["languages"] = "filter"
-	targetResumeFieldMap["resume_language"] = "filter"
-	targetResumeFieldMap["skills"] = "index"
-	targetResumeFieldMap["city"] = "filter"
-	targetResumeFieldMap["status"] = ""
-	targetResumeFieldMap["customer_id"] = ""
-	targetResumeFieldMap["salary_curr"] = "filter"
-	targetResumeFieldMap["business_trip"] = "filter"
+	targetResumeFieldMap["job_name"] = "index"
 	targetResumeFieldMap["salary"] = "filter"
-	targetResumeFieldMap["name"] = "index"
-	targetResumeFieldMap["created_at"] = ""
 	targetResumeFieldMap["job_desc_achievements"] = "index"
-	targetResumeFieldMap["industries"] = "filter"
-	targetResumeFieldMap["updated_at"] = ""
-	targetResumeFieldMap["job_desc_duties"] = "index"
+	targetResumeFieldMap["institute_name"] = "index"
+	targetResumeFieldMap["customer_id"] = ""
+	targetResumeFieldMap["work_type"] = ""
+	targetResumeFieldMap["skills"] = "index"
+	targetResumeFieldMap["name"] = "index"
+	targetResumeFieldMap["business_trip"] = "filter"
 	targetResumeFieldMap["default_work_type"] = "filter"
+	targetResumeFieldMap["resume_language"] = "filter"
+	targetResumeFieldMap["created_at"] = ""
+	targetResumeFieldMap["languages"] = "filter"
+	targetResumeFieldMap["regular_trip"] = "filter"
+	targetResumeFieldMap["metro"] = "filter"
+	targetResumeFieldMap["company_name"] = "index"
+	targetResumeFieldMap["additional_calc_form"] = "filter"
+	targetResumeFieldMap["about_short"] = "index"
+	targetResumeFieldMap["specialization"] = "filter"
+	targetResumeFieldMap["status"] = ""
+	targetResumeFieldMap["job_desc_duties"] = "index"
+	targetResumeFieldMap["payment_period"] = "filter"
+	targetResumeFieldMap["work_license"] = "filter"
+	targetResumeFieldMap["certificate_name"] = "index"
+	targetResumeFieldMap["salary_curr"] = "filter"
+	targetResumeFieldMap["industries"] = "filter"
+	targetResumeFieldMap["city"] = "filter"
+	targetResumeFieldMap["updated_at"] = ""
 	targetResumeFieldMapType["id"] = "uint32"
 	targetResumeFieldMapType["name"] = "string"
 	targetResumeFieldMapType["active"] = "bool"
@@ -76,7 +76,7 @@ func init() {
 	targetResumeFieldMapType["specialization"] = "uint32"
 	targetResumeFieldMapType["status"] = "uint32"
 }
-func (re *ResumeSearchEntity) BuildSearchQuery() (string, error) {
+func (re *ResumeSearchEntity) BuildSearchQuery(limit int) (string, error) {
 	var (
 		resErr error
 	)
@@ -198,7 +198,7 @@ func (re *ResumeSearchEntity) BuildSearchQuery() (string, error) {
 			}
 		}
 	}
-	_, err := sb.WriteString(";")
+	_, err := sb.WriteString(fmt.Sprintf(" LIMIT %d;", limit))
 	if err != nil {
 		resErr = gomultierror.Append(resErr, err)
 	}

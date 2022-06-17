@@ -10,57 +10,53 @@ import (
 )
 
 var (
-	targetVacancyFieldMap     = make(map[string]string, 39)
-	targetVacancyFieldMapType = make(map[string]string, 39)
+	targetVacancyFieldMap     = make(map[string]string, 37)
+	targetVacancyFieldMapType = make(map[string]string, 37)
 )
 
 func init() {
-	targetVacancyFieldMap["salary_curr"] = ""
 	targetVacancyFieldMap["experience"] = "filter"
+	targetVacancyFieldMap["name"] = "index"
+	targetVacancyFieldMap["vacancy_language"] = "filter"
+	targetVacancyFieldMap["payment_period"] = "filter"
+	targetVacancyFieldMap["business_trips"] = "filter"
+	targetVacancyFieldMap["restrictions"] = "filter"
+	targetVacancyFieldMap["created_at"] = ""
+	targetVacancyFieldMap["salary_before_tax"] = ""
+	targetVacancyFieldMap["salary_curr"] = ""
+	targetVacancyFieldMap["work_condition"] = "index"
 	targetVacancyFieldMap["id"] = ""
 	targetVacancyFieldMap["city"] = "filter"
-	targetVacancyFieldMap["website_url"] = ""
-	targetVacancyFieldMap["created_at"] = ""
-	targetVacancyFieldMap["metro"] = "filter"
-	targetVacancyFieldMap["salary_to"] = "filter"
-	targetVacancyFieldMap["work_condition"] = "index"
+	targetVacancyFieldMap["city_level"] = ""
 	targetVacancyFieldMap["city_visibility"] = "filter"
 	targetVacancyFieldMap["salary_from"] = "filter"
-	targetVacancyFieldMap["default_work_type"] = "filter"
+	targetVacancyFieldMap["driver_license"] = "filter"
 	targetVacancyFieldMap["skills"] = "index"
 	targetVacancyFieldMap["industry_groups"] = "filter"
-	targetVacancyFieldMap["job_requirement"] = "index"
-	targetVacancyFieldMap["business_tripp"] = "filter"
-	targetVacancyFieldMap["active"] = ""
-	targetVacancyFieldMap["requirement"] = "index"
-	targetVacancyFieldMap["city_level"] = ""
+	targetVacancyFieldMap["company_id"] = ""
+	targetVacancyFieldMap["job_responsibility"] = "index"
 	targetVacancyFieldMap["work_type"] = ""
+	targetVacancyFieldMap["active"] = ""
+	targetVacancyFieldMap["updated_at"] = ""
+	targetVacancyFieldMap["brand"] = "index"
+	targetVacancyFieldMap["default_work_type"] = "filter"
+	targetVacancyFieldMap["logo"] = ""
+	targetVacancyFieldMap["self_employed"] = "filter"
+	targetVacancyFieldMap["ip_employed"] = "filter"
+	targetVacancyFieldMap["specialization"] = "filter"
+	targetVacancyFieldMap["salary_to"] = "filter"
+	targetVacancyFieldMap["driver_exp"] = "filter"
 	targetVacancyFieldMap["min_customer_languages"] = "filter"
-	targetVacancyFieldMap["driver_license"] = "filter"
 	targetVacancyFieldMap["have_car"] = "filter"
 	targetVacancyFieldMap["list_respond_button"] = ""
-	targetVacancyFieldMap["brand"] = "index"
-	targetVacancyFieldMap["self_employed"] = "filter"
-	targetVacancyFieldMap["payment_period"] = "filter"
-	targetVacancyFieldMap["job_responsibility"] = "index"
-	targetVacancyFieldMap["restrictions"] = "filter"
-	targetVacancyFieldMap["salary_before_tax"] = ""
-	targetVacancyFieldMap["vacancy_language"] = "filter"
-	targetVacancyFieldMap["updated_at"] = ""
-	targetVacancyFieldMap["logo"] = ""
-	targetVacancyFieldMap["specialization"] = "filter"
-	targetVacancyFieldMap["ip_employed"] = "filter"
-	targetVacancyFieldMap["driver_exp"] = "filter"
-	targetVacancyFieldMap["name"] = "index"
-	targetVacancyFieldMap["salary"] = ""
-	targetVacancyFieldMap["company_id"] = ""
+	targetVacancyFieldMap["website_url"] = ""
+	targetVacancyFieldMap["metro"] = "filter"
+	targetVacancyFieldMap["job_requirement"] = "index"
 	targetVacancyFieldMapType["id"] = "uint32"
 	targetVacancyFieldMapType["name"] = "string"
 	targetVacancyFieldMapType["active"] = "bool"
-	targetVacancyFieldMapType["created_at"] = "uint64"
-	targetVacancyFieldMapType["updated_at"] = "uint64"
-	targetVacancyFieldMapType["requirement"] = "string"
-	targetVacancyFieldMapType["salary"] = "uint32"
+	targetVacancyFieldMapType["created_at"] = "int64"
+	targetVacancyFieldMapType["updated_at"] = "int64"
 	targetVacancyFieldMapType["skills"] = "string"
 	targetVacancyFieldMapType["city"] = "uint32"
 	targetVacancyFieldMapType["city_level"] = "uint32"
@@ -78,7 +74,7 @@ func init() {
 	targetVacancyFieldMapType["work_condition"] = "string"
 	targetVacancyFieldMapType["city_visibility"] = "[]uint32"
 	targetVacancyFieldMapType["vacancy_language"] = "uint32"
-	targetVacancyFieldMapType["business_tripp"] = "uint32"
+	targetVacancyFieldMapType["business_trips"] = "uint32"
 	targetVacancyFieldMapType["self_employed"] = "bool"
 	targetVacancyFieldMapType["ip_employed"] = "bool"
 	targetVacancyFieldMapType["payment_period"] = "uint32"
@@ -94,7 +90,7 @@ func init() {
 	targetVacancyFieldMapType["restrictions"] = "[]uint32"
 	targetVacancyFieldMapType["list_respond_button"] = "bool"
 }
-func (re *VacancySearchEntity) BuildSearchQuery() (string, error) {
+func (re *VacancySearchEntity) BuildSearchQuery(limit int) (string, error) {
 	var (
 		resErr error
 	)
@@ -102,7 +98,7 @@ func (re *VacancySearchEntity) BuildSearchQuery() (string, error) {
 		return "", errors.New("err validation. empty search req")
 	}
 	query := re.Query
-	sb := bytes.NewBufferString(fmt.Sprintf("SELECT * FROM resumes WHERE MATCH('*%s*')", query))
+	sb := bytes.NewBufferString(fmt.Sprintf("SELECT * FROM vacancies WHERE MATCH('*%s*')", query))
 	for _, v := range re.FilterParams {
 		if v.Filter == "" {
 			return "", errors.New("err validation. empty filter field")
@@ -216,7 +212,7 @@ func (re *VacancySearchEntity) BuildSearchQuery() (string, error) {
 			}
 		}
 	}
-	_, err := sb.WriteString(";")
+	_, err := sb.WriteString(fmt.Sprintf(" LIMIT %d;", limit))
 	if err != nil {
 		resErr = gomultierror.Append(resErr, err)
 	}

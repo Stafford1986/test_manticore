@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	resumeIndex  = "resumes"
+	resumeIndex = "resumes"
 
 	indexTag                 = "index"
 	filterParamsTag          = "filter_params"
@@ -28,7 +28,6 @@ func main() {
 	goPath := os.Getenv("GOPATH")
 	pkgPath := goPath + "/src/github.com/Stafford1986/test_manticore/pb"
 	pkg := loadPackage(pkgPath)
-
 
 	objResume := pkg.Types.Scope().Lookup("ResumeEntity")
 	if objResume == nil {
@@ -53,7 +52,6 @@ func main() {
 	if objResumeSearch == nil {
 		log.Fatal("not found in declared types of resume search entity")
 	}
-
 
 	if _, ok := objResumeSearch.(*types.TypeName); !ok {
 		log.Fatalf("%v is not a named type", objResumeSearch)
@@ -270,7 +268,6 @@ func generateResumeSaveMethods(pkgName string, pkgPath string, entityName string
 
 	shareBlock = append(shareBlock, jen.If(jen.Id("resErr").Op("!= nil")).Block(
 		jen.Return(jen.Lit(""), jen.Id("resErr")),
-
 	))
 
 	shareBlock = append(shareBlock, jen.Return(jen.Id("sb").Dot("String()"), jen.Nil()))
@@ -594,7 +591,8 @@ func generateResumeFindMethods(pkgName string, pkgPath string, entityName string
 
 	shareBlock = append(shareBlock,
 		jen.Id("_, err").Op(":=").Id("sb").
-			Dot("WriteString").Call(jen.Lit(";")),
+			Dot("WriteString").Call(jen.Qual(
+			"fmt", "Sprintf").Call(jen.Lit(" LIMIT %d;"), jen.Id("limit"))),
 		jen.If(jen.Id("err").Op("!= nil")).Block(
 			jen.Id("resErr").Op("=").Qual(
 				"github.com/hashicorp/go-multierror", "Append").
@@ -603,12 +601,11 @@ func generateResumeFindMethods(pkgName string, pkgPath string, entityName string
 
 	shareBlock = append(shareBlock, jen.If(jen.Id("resErr").Op("!= nil")).Block(
 		jen.Return(jen.Lit(""), jen.Id("resErr")),
-
 	))
 
 	shareBlock = append(shareBlock, jen.Return(jen.Id("sb").Dot("String()"), jen.Nil()))
 
-	f.Func().Params(jen.Id("re").Op("*").Id(entityName)).Id(methodBuildSearch).Params().Params(jen.String(), jen.Error()).Block(shareBlock...)
+	f.Func().Params(jen.Id("re").Op("*").Id(entityName)).Id(methodBuildSearch).Params(jen.Id("limit").Int()).Params(jen.String(), jen.Error()).Block(shareBlock...)
 
 	file_name := pkgPath + "/search_resume_helper_gen.go"
 
@@ -689,8 +686,7 @@ func generateResumeConvertMethod(packageName string, pkgPath string, entityName 
 			shareBlock = append(shareBlock, jen.If(jen.Id("err").Op("!=").Id("nil")).Block(
 				jen.Return(jen.Id("nil").Id(",").Qual(
 					"errors", "New").
-					Call(jen.Lit("err convert value to "+v),
-					))),
+					Call(jen.Lit("err convert value to "+v)))),
 			)
 			shareBlock = append(shareBlock, jen.Id("res").Dot(v).Op("=").Uint32().Call(jen.Id("p")))
 		case "[]uint32":
@@ -706,11 +702,9 @@ func generateResumeConvertMethod(packageName string, pkgPath string, entityName 
 				jen.If(jen.Id("err").Op("!=").Id("nil")).Block(
 					jen.Return(jen.Id("nil").Id(",").Qual(
 						"errors", "New").
-						Call(jen.Lit("err convert value to "+v),
-						))),
+						Call(jen.Lit("err convert value to "+v)))),
 				jen.Id("r").Op("=").Append(jen.Id("r"), jen.Uint32().Call(jen.Id("p")))),
 			),
-
 			)
 			shareBlock = append(shareBlock, jen.Id("res").Dot(v).Op("=").Id("r"))
 		case "int64":
@@ -719,8 +713,7 @@ func generateResumeConvertMethod(packageName string, pkgPath string, entityName 
 			shareBlock = append(shareBlock, jen.If(jen.Id("err").Op("!=").Id("nil")).Block(
 				jen.Return(jen.Id("nil").Id(",").Qual(
 					"errors", "New").
-					Call(jen.Lit("err convert value to "+v),
-					))),
+					Call(jen.Lit("err convert value to "+v)))),
 			)
 			shareBlock = append(shareBlock, jen.Id("res").Dot(v).Op("=").Id("p"))
 		case "bool":
@@ -730,8 +723,7 @@ func generateResumeConvertMethod(packageName string, pkgPath string, entityName 
 			shareBlock = append(shareBlock, jen.If(jen.Id("err").Op("!=").Id("nil")).Block(
 				jen.Return(jen.Id("nil").Id(",").Qual(
 					"errors", "New").
-					Call(jen.Lit("err convert value to "+v),
-					))),
+					Call(jen.Lit("err convert value to "+v)))),
 			)
 			shareBlock = append(shareBlock, jen.If(jen.Id("p").Op("==").Id("0")).Block(
 				jen.Id("res").Dot(v).Op("=").Id("false"),
@@ -783,7 +775,7 @@ func generateResumeVet(pkgName string, pkgPath string, entityName string, struct
 	methodVet := "Vet"
 
 	var (
-		shareBlock  []jen.Code
+		shareBlock []jen.Code
 	)
 
 	structFields := make([]string, 0, structType.NumFields())

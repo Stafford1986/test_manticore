@@ -35,8 +35,6 @@ CREATE TABLE IF NOT EXISTS vacancies (
     active int,
     created_at timestamp,
     updated_at timestamp,
-    requirement text,
-    salary int,
     skills text,
     city int,
     city_level int,
@@ -67,6 +65,6 @@ CREATE TABLE IF NOT EXISTS vacancies (
     driver_license multi,
     driver_exp int,
     have_car int,
-    restrictions int,
+    restrictions  multi,
     list_respond_button int
 ) dict='keywords' index_exact_words='1' min_infix_len='2';

@@ -8,6 +8,7 @@ import (
 	"github.com/Stafford1986/test_manticore/usecase/entity"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"strconv"
 	"strings"
 )
 
@@ -26,11 +27,32 @@ func NewVacancyRepository(db *sqlx.DB) *VacancyRepository {
 }
 
 func (repo *VacancyRepository) Insert(ctx context.Context, req *pb.VacancyEntity) error {
+	ctxWithCancel, cancelFn := context.WithCancel(ctx)
+	defer cancelFn()
 	q, err := req.BuildInsertQuery()
 	if err != nil {
 		return err
 	}
-	_, err = repo.db.QueryContext(ctx, q)
+	_, err = repo.db.QueryContext(ctxWithCancel, q)
+	if err != nil {
+		var mysqlErr *mysql.MySQLError
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1064 && strings.Contains(mysqlErr.Message, "duplicate") {
+			return entity.ErrDuplicateId
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (repo *VacancyRepository) BulkInsert(ctx context.Context, req *pb.VacancyList) error {
+	ctxWithCancel, cancelFn := context.WithCancel(ctx)
+	defer cancelFn()
+	q, err := req.BuildBulkInsertQuery()
+	if err != nil {
+		return err
+	}
+	_, err = repo.db.QueryContext(ctxWithCancel, q)
 	if err != nil {
 		var mysqlErr *mysql.MySQLError
 		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1064 && strings.Contains(mysqlErr.Message, "duplicate") {
@@ -61,8 +83,8 @@ func (repo *VacancyRepository) Upsert(ctx context.Context, req *pb.VacancyEntity
 	return nil
 }
 
-func (repo *VacancyRepository) Find(ctx context.Context, sr *pb.VacancySearchEntity) (*pb.VacancySearchResponse, error) {
-	fr, err := sr.BuildSearchQuery()
+func (repo *VacancyRepository) Find(ctx context.Context, sr *pb.VacancySearchEntity) ([]uint32, error) {
+	fr, err := sr.BuildSearchQuery(1000)
 	if err != nil {
 		return nil, err
 	}
@@ -77,11 +99,10 @@ func (repo *VacancyRepository) Find(ctx context.Context, sr *pb.VacancySearchEnt
 		return nil, err
 	}
 
-	var result []*pb.VacancyEntity
+	var result []uint32
 
 	for {
 		if rows.Next() {
-			vc := &pb.VacancyEntity{}
 			fieldMap := make(map[string]interface{}, len(col))
 
 			err = sqlx.MapScan(rows, fieldMap)
@@ -89,12 +110,17 @@ func (repo *VacancyRepository) Find(ctx context.Context, sr *pb.VacancySearchEnt
 				return nil, err
 			}
 
-			vac, err := vc.ParseDbResult(fieldMap)
+			val := fieldMap["id"]
+			v, ok := val.([]byte)
+			if !ok {
+				return nil, errors.New("err convert id")
+			}
+			p, err := strconv.ParseUint(string(v), 10, 32)
 			if err != nil {
-				return nil, err
+				return nil, errors.New("err convert value to Id")
 			}
 
-			result = append(result, vac)
+			result = append(result, uint32(p))
 
 			continue
 		}
@@ -102,9 +128,7 @@ func (repo *VacancyRepository) Find(ctx context.Context, sr *pb.VacancySearchEnt
 		break
 	}
 
-	return &pb.VacancySearchResponse{
-		Items: result,
-	}, nil
+	return result, nil
 }
 
 func (repo *VacancyRepository) GetSuggestions(ctx context.Context, req string) ([]string, error) {

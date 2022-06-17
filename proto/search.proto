@@ -1,8 +1,5 @@
 syntax = "proto3";
 
-import "search-vacancy.proto";
-import "search-resume.proto";
-
 package search;
 
 option go_package = "./pkg/search/pb";
@@ -18,7 +15,7 @@ message VacancySearchEntity {
 message VacancySearchResponse {
   // in: body
   // required: true
-  repeated VacancyEntity items = 1;
+  repeated uint32 items = 1;
 }
 
 
@@ -33,7 +30,7 @@ message ResumeSearchEntity {
 message ResumeSearchResponse {
   // in: body
   // required: true
-  repeated ResumeEntity items = 1;
+  repeated uint32 items = 1;
 }
 
 
